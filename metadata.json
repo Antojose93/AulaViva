@@ -1,0 +1,6 @@
+{
+  "name": "Aula Viva",
+  "description": "Plataforma de mentoría gamificada para habilidades de vida en estudiantes de grado 11.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

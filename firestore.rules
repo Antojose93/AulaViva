@@ -1,0 +1,116 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check user role
+    function isUserRole(role) {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+    
+    function isMentor() {
+      return isAuthenticated() && (
+        isUserRole('mentor') || 
+        request.auth.token.email == 'andres.valenzuela@aulaviva.edu'
+      );
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && (request.auth.uid == userId || isMentor());
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (request.auth.uid == userId || isMentor());
+      allow update, delete: if isOwner(userId) || isMentor();
+    }
+
+    // Student Profiles collection
+    match /studentProfiles/{profileId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor() || (isAuthenticated() && resource.data.userId == request.auth.uid) || (isAuthenticated() && request.resource.data.userId == request.auth.uid);
+    }
+
+    // Skills (Master catalog)
+    match /skills/{skillId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor();
+    }
+
+    // Skill Levels
+    match /skillLevels/{levelId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor() || (isAuthenticated() && (resource.data.studentId == request.auth.uid || request.resource.data.studentId == request.auth.uid));
+    }
+
+    // Missions catalog
+    match /missions/{missionId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor();
+    }
+
+    // Mission Assignments
+    match /missionAssignments/{assignmentId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor() || (isAuthenticated() && (resource.data.studentId == request.auth.uid || request.resource.data.studentId == request.auth.uid));
+    }
+
+    // Mission Submissions
+    match /missionSubmissions/{submissionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (request.resource.data.studentId == request.auth.uid || isMentor());
+      allow update: if isMentor() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
+      allow delete: if isMentor();
+    }
+
+    // Badges catalog
+    match /badges/{badgeId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor();
+    }
+
+    // Earned Badges
+    match /earnedBadges/{earnedBadgeId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor() || (isAuthenticated() && request.resource.data.studentId == request.auth.uid);
+    }
+
+    // Diagnostic Questions
+    match /diagnosticQuestions/{questionId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor();
+    }
+
+    // Diagnostic Results
+    match /diagnosticResults/{resultId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor() || (isAuthenticated() && (resource.data.studentId == request.auth.uid || request.resource.data.studentId == request.auth.uid));
+    }
+
+    // Weekly Messages from Mentor
+    match /weeklyMessages/{messageId} {
+      allow read: if isAuthenticated();
+      allow write: if isMentor();
+    }
+
+    // Student Notifications
+    match /studentNotifications/{notificationId} {
+      allow read: if isAuthenticated();
+      allow create: if isMentor();
+      allow update, delete: if isMentor() || (isAuthenticated() && resource.data.studentId == request.auth.uid);
+    }
+
+    // System initialization flag
+    match /systemMeta/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "entities": {
+    "users": {
+      "title": "Usuarios",
+      "description": "Usuarios de la plataforma Aula Viva (mentores y estudiantes)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID de usuario Auth o UID" },
+        "name": { "type": "string", "description": "Nombre completo" },
+        "email": { "type": "string", "description": "Correo electrónico" },
+        "role": { "type": "string", "enum": ["mentor", "student"], "description": "Rol en la plataforma" },
+        "avatar": { "type": "string", "description": "URL del avatar" },
+        "createdAt": { "type": "string", "description": "Fecha de registro ISO" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "studentProfiles": {
+      "title": "Perfiles de Estudiante",
+      "description": "Datos gamificados del estudiante",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "grade": { "type": "string" },
+        "overallXp": { "type": "number" },
+        "overallLevel": { "type": "number" },
+        "currentStreak": { "type": "number" },
+        "longestStreak": { "type": "number" },
+        "lastActiveDate": { "type": "string" },
+        "diagnosticCompleted": { "type": "boolean" },
+        "statusHealth": { "type": "string", "enum": ["optimo", "progreso", "observacion"] },
+        "mentorNotes": { "type": "string" }
+      },
+      "required": ["userId", "grade", "overallXp", "overallLevel"]
+    },
+    "skills": {
+      "title": "Habilidades para la Vida",
+      "description": "Dimensiones del desarrollo de vida",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "color": { "type": "string" },
+        "iconName": { "type": "string" },
+        "category": { "type": "string" }
+      },
+      "required": ["name", "color", "iconName"]
+    },
+    "skillLevels": {
+      "title": "Nivel de Habilidad por Estudiante",
+      "description": "Progreso y XP por habilidad",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "skillId": { "type": "string" },
+        "xp": { "type": "number" },
+        "level": { "type": "number" }
+      },
+      "required": ["studentId", "skillId", "xp", "level"]
+    },
+    "missions": {
+      "title": "Misiones de Vida",
+      "description": "Misiones asignadas a estudiantes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "skillId": { "type": "string" },
+        "xp": { "type": "number" },
+        "difficulty": { "type": "string", "enum": ["facil", "media", "dificil", "epica"] },
+        "type": { "type": "string", "enum": ["diaria", "semanal", "reto/boss", "personalizada"] },
+        "frequency": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "requiresEvidence": { "type": "boolean" },
+        "unlockCondition": { "type": "string" },
+        "assignedStudentIds": { "type": "array", "items": { "type": "string" } },
+        "createdBy": { "type": "string" }
+      },
+      "required": ["title", "skillId", "xp", "type"]
+    },
+    "missionAssignments": {
+      "title": "Asignaciones de Misiones",
+      "description": "Relación entre estudiante y misión",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "missionId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "status": { "type": "string", "enum": ["activa", "completada", "expirada"] },
+        "assignedAt": { "type": "string" },
+        "completedAt": { "type": "string" }
+      },
+      "required": ["missionId", "studentId", "status"]
+    },
+    "missionSubmissions": {
+      "title": "Entregas y Evidencias de Misión",
+      "description": "Evidencias y reflexiones subidas por estudiantes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "missionId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "status": { "type": "string", "enum": ["cumplida", "no_cumplida", "pendiente_aprobacion"] },
+        "reflection": { "type": "string" },
+        "evidenceUrl": { "type": "string" },
+        "evidenceDescription": { "type": "string" },
+        "submittedAt": { "type": "string" },
+        "reviewedBy": { "type": "string" },
+        "reviewedAt": { "type": "string" },
+        "mentorFeedback": { "type": "string" },
+        "xpAwarded": { "type": "number" }
+      },
+      "required": ["missionId", "studentId", "status", "submittedAt"]
+    },
+    "badges": {
+      "title": "Insignias de Logro",
+      "description": "Insignias del sistema gamificado",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "category": { "type": "string" },
+        "conditionType": { "type": "string" }
+      },
+      "required": ["name", "description", "icon", "category"]
+    },
+    "earnedBadges": {
+      "title": "Insignias Obtenidas",
+      "description": "Insignias ganadas por estudiantes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "badgeId": { "type": "string" },
+        "earnedAt": { "type": "string" }
+      },
+      "required": ["studentId", "badgeId", "earnedAt"]
+    },
+    "weeklyMessages": {
+      "title": "Mensajes Semanales del Mentor",
+      "description": "Orientaciones pedagógicas enviadas a los estudiantes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "mentorId": { "type": "string" },
+        "weekNumber": { "type": "number" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "advice": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["studentId", "mentorId", "weekNumber", "title", "message"]
+    },
+    "studentNotifications": {
+      "title": "Notificaciones del Estudiante",
+      "description": "Alertas de misiones y mensajes del mentor",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "type": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "referenceId": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["studentId", "type", "title", "message", "read"]
+    }
+  }
+}
